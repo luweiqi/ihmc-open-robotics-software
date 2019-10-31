@@ -40,11 +40,12 @@ import us.ihmc.modelFileLoaders.SdfLoader.SDFDescriptionMutator;
 import us.ihmc.modelFileLoaders.SdfLoader.SDFForceSensor;
 import us.ihmc.modelFileLoaders.SdfLoader.SDFJointHolder;
 import us.ihmc.modelFileLoaders.SdfLoader.SDFLinkHolder;
+import us.ihmc.modelFileLoaders.SdfLoader.SDFModelLoader;
 import us.ihmc.modelFileLoaders.SdfLoader.xmlDescription.SDFGeometry;
 import us.ihmc.modelFileLoaders.SdfLoader.xmlDescription.SDFSensor;
 import us.ihmc.modelFileLoaders.SdfLoader.xmlDescription.SDFVisual;
+import us.ihmc.multicastLogDataProtocol.modelLoaders.DefaultLogModelProvider;
 import us.ihmc.multicastLogDataProtocol.modelLoaders.LogModelProvider;
-import us.ihmc.multicastLogDataProtocol.modelLoaders.SDFLogModelProvider;
 import us.ihmc.pathPlanning.visibilityGraphs.parameters.DefaultVisibilityGraphParameters;
 import us.ihmc.pathPlanning.visibilityGraphs.parameters.VisibilityGraphsParametersBasics;
 import us.ihmc.robotDataLogger.logger.DataServerSettings;
@@ -439,12 +440,23 @@ public class ValkyrieRobotModel implements DRCRobotModel, SDFDescriptionMutator
    @Override
    public SimulatedHandControlTask createSimulatedHandController(FloatingRootJointRobot simulatedRobot, RealtimeRos2Node realtimeRos2Node)
    {
-      if (!ValkyrieConfigurationRoot.VALKYRIE_WITH_ARMS)
-         return null;
-      else
+      boolean hasFingers = true;
+      for(RobotSide robotSide : RobotSide.values)
+      {
+         String handLinkName = jointMap.getHandName(robotSide);
+         hasFingers = hasFingers && !simulatedRobot.getLink(handLinkName).getParentJoint().getChildrenJoints().isEmpty();
+      }
+
+      if (ValkyrieConfigurationRoot.VALKYRIE_WITH_ARMS && hasFingers)
+      {
          return new SimulatedValkyrieFingerController(simulatedRobot, realtimeRos2Node, this,
                                                       ControllerAPIDefinition.getPublisherTopicNameGenerator(getSimpleRobotName()),
                                                       ControllerAPIDefinition.getSubscriberTopicNameGenerator(getSimpleRobotName()));
+      }
+      else
+      {
+         return null;
+      }
    }
 
    @Override
@@ -456,7 +468,7 @@ public class ValkyrieRobotModel implements DRCRobotModel, SDFDescriptionMutator
    @Override
    public LogModelProvider getLogModelProvider()
    {
-      return new SDFLogModelProvider(jointMap.getModelName(), getSdfFileAsStream(), getResourceDirectories());
+      return new DefaultLogModelProvider<>(SDFModelLoader.class, jointMap.getModelName(), getSdfFileAsStream(), getResourceDirectories());
    }
 
    @Override

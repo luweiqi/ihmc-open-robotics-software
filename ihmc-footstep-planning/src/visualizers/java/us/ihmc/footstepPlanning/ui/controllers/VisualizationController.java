@@ -2,7 +2,6 @@ package us.ihmc.footstepPlanning.ui.controllers;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.CheckBox;
-import javafx.scene.control.ToggleButton;
 import us.ihmc.commons.PrintTools;
 import us.ihmc.javaFXToolkit.messager.JavaFXMessager;
 
@@ -31,6 +30,10 @@ public class VisualizationController
    @FXML
    private CheckBox showClusterNonNavigableExtrusionsToggleButton;
    @FXML
+   private CheckBox showClusterPreferredNavigableExtrusionsToggleButton;
+   @FXML
+   private CheckBox showClusterPreferredNonNavigableExtrusionsToggleButton;
+   @FXML
    private CheckBox showOccupancyMap;
    @FXML
    private CheckBox showSolution;
@@ -56,17 +59,19 @@ public class VisualizationController
    {
       messager.bindBidirectional(ShowBodyPath, showBodyPathToggleButton.selectedProperty(), true);
 
-      messager.bindBidirectional(ShowPlanarRegionsTopic, showPlanarRegionsToggleButton.selectedProperty(), true);
+      messager.bindBidirectional(ShowPlanarRegions, showPlanarRegionsToggleButton.selectedProperty(), true);
       messager.bindBidirectional(ShowClusterRawPoints, showClusterRawPointsToggleButton.selectedProperty(), true);
       messager.bindBidirectional(ShowClusterNavigableExtrusions, showClusterNavigableExtrusionsToggleButton.selectedProperty(), true);
       messager.bindBidirectional(ShowClusterNonNavigableExtrusions, showClusterNonNavigableExtrusionsToggleButton.selectedProperty(), true);
+      messager.bindBidirectional(ShowClusterPreferredNavigableExtrusions, showClusterPreferredNavigableExtrusionsToggleButton.selectedProperty(), true);
+      messager.bindBidirectional(ShowClusterPreferredNonNavigableExtrusions, showClusterPreferredNonNavigableExtrusionsToggleButton.selectedProperty(), true);
 
       messager.bindBidirectional(ShowNavigableRegionVisibilityMaps, showInnerRegionMapsToggleButton.selectedProperty(), true);
       messager.bindBidirectional(ShowInterRegionVisibilityMap, showInterRegionMapToggleButton.selectedProperty(), true);
       messager.bindBidirectional(ShowStartVisibilityMap, showStartMapToggleButton.selectedProperty(), true);
       messager.bindBidirectional(ShowGoalVisibilityMap, showGoalMapToggleButton.selectedProperty(), true);
       messager.bindBidirectional(ShowOccupancyMap, showOccupancyMap.selectedProperty(), true);
-      messager.bindBidirectional(ShowFootstepPlanTopic, showSolution.selectedProperty(), true);
-      messager.bindBidirectional(ShowNodeDataTopic, showIntermediateSolution.selectedProperty(), true);
+      messager.bindBidirectional(ShowFootstepPlan, showSolution.selectedProperty(), true);
+      messager.bindBidirectional(ShowNodeData, showIntermediateSolution.selectedProperty(), true);
    }
 }
