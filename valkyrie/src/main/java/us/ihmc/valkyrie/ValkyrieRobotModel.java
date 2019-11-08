@@ -57,7 +57,7 @@ import us.ihmc.ros2.RealtimeRos2Node;
 import us.ihmc.sensorProcessing.stateEstimation.StateEstimatorParameters;
 import us.ihmc.simulationConstructionSetTools.util.HumanoidFloatingRootJointRobot;
 import us.ihmc.simulationconstructionset.FloatingRootJointRobot;
-import us.ihmc.valkyrie.configuration.ValkyrieConfigurationRoot;
+import us.ihmc.valkyrie.configuration.ValkyrieRobotVersion;
 import us.ihmc.valkyrie.configuration.YamlWithIncludesLoader;
 import us.ihmc.valkyrie.fingers.SimulatedValkyrieFingerController;
 import us.ihmc.valkyrie.fingers.ValkyrieHandModel;
@@ -82,6 +82,8 @@ import us.ihmc.wholeBodyController.UIParameters;
 public class ValkyrieRobotModel implements DRCRobotModel, SDFDescriptionMutator
 {
    private static final boolean PRINT_MODEL = false;
+   // TODO pass in as parameter
+   public static final ValkyrieRobotVersion robotVersion = ValkyrieRobotVersion.DEFAULT;
 
    private final ICPWithTimeFreezingPlannerParameters capturePointPlannerParameters;
    private final WalkingControllerParameters walkingControllerParameters;
@@ -152,7 +154,7 @@ public class ValkyrieRobotModel implements DRCRobotModel, SDFDescriptionMutator
    {
       this.target = target;
       this.useOBJGraphics = useOBJGraphics;
-      jointMap = new ValkyrieJointMap();
+      jointMap = new ValkyrieJointMap(robotVersion);
       contactPointParameters = new ValkyrieContactPointParameters(jointMap, simulationContactPoints);
       sensorInformation = new ValkyrieSensorInformation(target);
       highLevelControllerParameters = new ValkyrieHighLevelControllerParameters(target, jointMap);
@@ -324,9 +326,9 @@ public class ValkyrieRobotModel implements DRCRobotModel, SDFDescriptionMutator
    private String getSdfFile()
    {
       if (this.target == RobotTarget.REAL_ROBOT)
-         return ValkyrieConfigurationRoot.REAL_ROBOT_SDF_FILE;
+         return robotVersion.getRealRobotSdfFile();
       else
-         return ValkyrieConfigurationRoot.SIM_SDF_FILE;
+         return robotVersion.getSimSdfFile();
    }
 
    private String[] getResourceDirectories()
@@ -446,7 +448,7 @@ public class ValkyrieRobotModel implements DRCRobotModel, SDFDescriptionMutator
          hasFingers = hasFingers && !simulatedRobot.getLink(handLinkName).getParentJoint().getChildrenJoints().isEmpty();
       }
 
-      if (ValkyrieConfigurationRoot.VALKYRIE_WITH_ARMS && hasFingers)
+      if (robotVersion.hasHands())
       {
          return new SimulatedValkyrieFingerController(simulatedRobot, realtimeRos2Node, this,
                                                       ControllerAPIDefinition.getPublisherTopicNameGenerator(getSimpleRobotName()),
@@ -514,6 +516,11 @@ public class ValkyrieRobotModel implements DRCRobotModel, SDFDescriptionMutator
       {
 
       }
+   }
+
+   public ValkyrieRobotVersion getRobotVersion()
+   {
+      return robotVersion;
    }
 
    @Override
