@@ -19,7 +19,7 @@ import us.ihmc.robotics.Assert;
 import us.ihmc.robotics.robotSide.RobotSide;
 import us.ihmc.robotics.robotSide.SideDependentList;
 import us.ihmc.valkyrie.ValkyrieRobotModel;
-import us.ihmc.valkyrie.parameters.ValkyrieFootstepPlannerParameters;
+import us.ihmc.valkyrie.parameters.ValkyrieMultistagePlanningParameters;
 import us.ihmc.wholeBodyController.RobotContactPointParameters;
 
 public class FootstepPlannerStepUpTest
@@ -36,7 +36,7 @@ public class FootstepPlannerStepUpTest
       graph.checkAndSetEdge(node1, node2, 1.0);
       graph.checkAndSetEdge(node2, node3, 1.0);
 
-      FootstepPlannerParametersReadOnly parameters = new ValkyrieFootstepPlannerParameters();
+      FootstepPlannerParametersReadOnly parameters = new ValkyrieMultistagePlanningParameters();
       SideDependentList<ConvexPolygon2D> footPolygons = createFootPolygonsFromContactPoints(
             new ValkyrieRobotModel(RobotTarget.SCS).getContactPointParameters());
       SimplePlanarRegionFootstepNodeSnapper snapper = new SimplePlanarRegionFootstepNodeSnapper(footPolygons);

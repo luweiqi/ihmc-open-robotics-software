@@ -3,16 +3,16 @@ package us.ihmc.valkyrie.parameters;
 import us.ihmc.footstepPlanning.graphSearch.parameters.*;
 import us.ihmc.tools.property.StoredPropertySet;
 
-public class ValkyrieFootstepPlannerParameters extends StoredPropertySet implements FootstepPlannerParametersBasics
+public class ValkyrieMultistagePlanningParameters extends StoredPropertySet implements FootstepPlannerParametersBasics
 {
-   public ValkyrieFootstepPlannerParameters()
+   public ValkyrieMultistagePlanningParameters()
    {
       this("ihmc-open-robotics-software", "valkyrie/src/main/resources");
    }
 
-   public ValkyrieFootstepPlannerParameters(String projectName, String pathToResources)
+   public ValkyrieMultistagePlanningParameters(String projectName, String pathToResources)
    {
-      super(FootstepPlannerParameterKeys.keys, ValkyrieFootstepPlannerParameters.class, projectName, pathToResources);
+      super(FootstepPlannerParameterKeys.keys, ValkyrieMultistagePlanningParameters.class, projectName, pathToResources);
 
       setCheckForBodyBoxCollisions(false);
       setIdealFootstepWidth(0.2);
@@ -60,7 +60,7 @@ public class ValkyrieFootstepPlannerParameters extends StoredPropertySet impleme
 
    public static void main(String[] args)
    {
-      ValkyrieFootstepPlannerParameters parameters = new ValkyrieFootstepPlannerParameters();
+      ValkyrieMultistagePlanningParameters parameters = new ValkyrieMultistagePlanningParameters();
       parameters.save();
    }
 }

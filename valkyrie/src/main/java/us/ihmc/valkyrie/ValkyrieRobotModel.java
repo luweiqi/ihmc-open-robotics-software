@@ -48,7 +48,7 @@ import us.ihmc.valkyrie.fingers.SimulatedValkyrieFingerController;
 import us.ihmc.valkyrie.fingers.ValkyrieHandModel;
 import us.ihmc.valkyrie.parameters.ValkyrieCollisionBoxProvider;
 import us.ihmc.valkyrie.parameters.ValkyrieContactPointParameters;
-import us.ihmc.valkyrie.parameters.ValkyrieFootstepPlannerParameters;
+import us.ihmc.valkyrie.parameters.ValkyrieMultistagePlanningParameters;
 import us.ihmc.valkyrie.parameters.ValkyrieFootstepPlanningParameters;
 import us.ihmc.valkyrie.parameters.ValkyrieJointMap;
 import us.ihmc.valkyrie.parameters.ValkyriePhysicalProperties;
@@ -495,7 +495,7 @@ public class ValkyrieRobotModel implements DRCRobotModel
    @Override
    public FootstepPlannerParametersBasics getFootstepPlannerParameters()
    {
-      return new ValkyrieFootstepPlannerParameters();
+      return new ValkyrieMultistagePlanningParameters();
    }
 
    @Override
