@@ -33,6 +33,14 @@ public class SettableContactStateProvider implements ContactStateProvider
       endCopPosition.setToNaN();
    }
 
+   public void set(ContactStateProvider other)
+   {
+      setStartCopPosition(other.getCopStartPosition());
+      setEndCopPosition(other.getCopEndPosition());
+      setTimeInterval(other.getTimeInterval());
+      setContactState(other.getContactState());
+   }
+
    public void setStartCopPosition(FramePoint3DReadOnly startCopPosition)
    {
       this.startCopPosition.set(startCopPosition);
