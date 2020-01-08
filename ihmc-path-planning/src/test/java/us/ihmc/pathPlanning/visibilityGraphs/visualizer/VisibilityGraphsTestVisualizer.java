@@ -1,11 +1,13 @@
 package us.ihmc.pathPlanning.visibilityGraphs.visualizer;
 
+import static us.ihmc.pathPlanning.visibilityGraphs.ui.messager.UIVisibilityGraphsTopics.*;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import com.sun.javafx.scene.control.skin.LabeledText;
+import com.sun.javafx.scene.control.LabeledText;
 
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
@@ -28,14 +30,7 @@ import us.ihmc.javaFXToolkit.scenes.View3DFactory;
 import us.ihmc.log.LogTools;
 import us.ihmc.pathPlanning.visibilityGraphs.ui.messager.UIVisibilityGraphsTopics;
 import us.ihmc.pathPlanning.visibilityGraphs.ui.properties.Point3DProperty;
-import us.ihmc.pathPlanning.visibilityGraphs.ui.viewers.BodyPathMeshViewer;
-import us.ihmc.pathPlanning.visibilityGraphs.ui.viewers.ClusterMeshViewer;
-import us.ihmc.pathPlanning.visibilityGraphs.ui.viewers.NavigableRegionViewer;
-import us.ihmc.pathPlanning.visibilityGraphs.ui.viewers.PlanarRegionViewer;
-import us.ihmc.pathPlanning.visibilityGraphs.ui.viewers.StartGoalPositionViewer;
-import us.ihmc.pathPlanning.visibilityGraphs.ui.viewers.VisibilityMapHolderViewer;
-
-import static us.ihmc.pathPlanning.visibilityGraphs.ui.messager.UIVisibilityGraphsTopics.*;
+import us.ihmc.pathPlanning.visibilityGraphs.ui.viewers.*;
 
 public class VisibilityGraphsTestVisualizer
 {
