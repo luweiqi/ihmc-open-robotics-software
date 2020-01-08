@@ -1,4 +1,4 @@
-package us.ihmc.footstepPlanning.ui;
+package us.ihmc.pathPlanning.visibilityGraphs.ui;
 
 import com.sun.javafx.application.PlatformImpl;
 import javafx.application.Application;
