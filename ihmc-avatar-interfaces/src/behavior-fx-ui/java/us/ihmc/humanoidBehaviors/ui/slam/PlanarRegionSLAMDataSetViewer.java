@@ -1,18 +1,17 @@
 package us.ihmc.humanoidBehaviors.ui.slam;
 
-import javafx.application.Application;
-import javafx.stage.Stage;
-import us.ihmc.pathPlanning.visibilityGraphs.ui.graphics.PlanarRegionsGraphic;
-import us.ihmc.javaFXToolkit.scenes.View3DFactory;
-import us.ihmc.robotics.PlanarRegionFileTools;
-
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-public class PlanarRegionSLAMDataSetViewer extends Application
+import javafx.stage.Stage;
+import us.ihmc.javaFXToolkit.scenes.View3DFactory;
+import us.ihmc.javaFXToolkit.starter.ApplicationRunner;
+import us.ihmc.pathPlanning.visibilityGraphs.ui.graphics.PlanarRegionsGraphic;
+import us.ihmc.robotics.PlanarRegionFileTools;
+
+public class PlanarRegionSLAMDataSetViewer
 {
-   @Override
-   public void start(Stage primaryStage) throws Exception
+   public PlanarRegionSLAMDataSetViewer(Stage primaryStage)
    {
       View3DFactory view3dFactory = new View3DFactory(1200, 800);
       view3dFactory.addCameraController(0.05, 2000.0, true);
@@ -33,8 +32,8 @@ public class PlanarRegionSLAMDataSetViewer extends Application
    private void importPlanarRegionsList(View3DFactory view3dFactory, String dataSetName)
    {
       PlanarRegionsGraphic regionsGraphic = new PlanarRegionsGraphic();
-      Path SLAMDataSet1 = Paths.get(
-            "ihmc-open-robotics-software/robot-environment-awareness/Data/PlanarRegion/190710_SLAM_PlanarRegionFittingExamples/" + dataSetName);
+      Path SLAMDataSet1 = Paths.get("ihmc-open-robotics-software/robot-environment-awareness/Data/PlanarRegion/190710_SLAM_PlanarRegionFittingExamples/"
+            + dataSetName);
       regionsGraphic.generateMeshes(PlanarRegionFileTools.importPlanarRegionData(SLAMDataSet1.toFile()));
       regionsGraphic.update();
       view3dFactory.addNodeToView(regionsGraphic);
@@ -42,6 +41,6 @@ public class PlanarRegionSLAMDataSetViewer extends Application
 
    public static void main(String[] args)
    {
-      launch(args);
+      ApplicationRunner.runApplication(PlanarRegionSLAMDataSetViewer::new);
    }
 }

@@ -1,24 +1,22 @@
 package us.ihmc.humanoidBehaviors.behaviors.diagnostic;
 
+import java.text.DecimalFormat;
+import java.util.HashMap;
+
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
+import us.ihmc.javaFXToolkit.starter.ApplicationRunner;
 
-import java.net.URL;
-import java.text.DecimalFormat;
-import java.util.HashMap;
-import java.util.ResourceBundle;
-
-public class RunPerformanceViewer extends Application implements Initializable
+public class RunPerformanceViewer
 {
    public SQLBehaviorDatabaseManager dataBase = new SQLBehaviorDatabaseManager();
    private ObservableList<Run> runsList = FXCollections.observableArrayList();
@@ -86,7 +84,6 @@ public class RunPerformanceViewer extends Application implements Initializable
       //not implemented yet
    }
 
-   @Override
    public void start(Stage stage) throws Exception
    {
       Parent root = FXMLLoader.load(getClass().getResource(getClass().getSimpleName() + ".fxml"));
@@ -94,11 +91,7 @@ public class RunPerformanceViewer extends Application implements Initializable
       stage.setTitle(getClass().getSimpleName());
       stage.setScene(scene);
       stage.show();
-   }
 
-   @Override
-   public void initialize(URL location, ResourceBundle resources)
-   {
       runTableColumn.setCellValueFactory(new PropertyValueFactory<>("runID"));
       operatorTableColumn.setCellValueFactory(new PropertyValueFactory<>("operatorName"));
       taskTableColumn.setCellValueFactory(new PropertyValueFactory<>("taskName"));
@@ -163,6 +156,13 @@ public class RunPerformanceViewer extends Application implements Initializable
 
    public static void main(String[] args)
    {
-      launch(args);
+      ApplicationRunner.runApplication(new Application()
+      {
+         @Override
+         public void start(Stage primaryStage) throws Exception
+         {
+            new RunPerformanceViewer().start(primaryStage);
+         }
+      });
    }
 }

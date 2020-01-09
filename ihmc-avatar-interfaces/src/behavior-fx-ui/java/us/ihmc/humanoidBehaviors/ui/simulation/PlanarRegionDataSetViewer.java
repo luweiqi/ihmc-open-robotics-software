@@ -1,18 +1,17 @@
 package us.ihmc.humanoidBehaviors.ui.simulation;
 
-import javafx.application.Application;
+import java.io.File;
+
 import javafx.stage.Stage;
-import us.ihmc.pathPlanning.visibilityGraphs.ui.graphics.PlanarRegionsGraphic;
 import us.ihmc.javaFXToolkit.scenes.View3DFactory;
+import us.ihmc.javaFXToolkit.starter.ApplicationRunner;
+import us.ihmc.pathPlanning.visibilityGraphs.ui.graphics.PlanarRegionsGraphic;
 import us.ihmc.robotEnvironmentAwareness.ui.io.PlanarRegionDataImporter;
 import us.ihmc.robotics.PlanarRegionFileTools;
 
-import java.io.File;
-
-public class PlanarRegionDataSetViewer extends Application
+public class PlanarRegionDataSetViewer
 {
-   @Override
-   public void start(Stage primaryStage) throws Exception
+   public PlanarRegionDataSetViewer(Stage primaryStage)
    {
       View3DFactory view3dFactory = new View3DFactory(1200, 800);
       view3dFactory.addCameraController(0.05, 2000.0,true);
@@ -35,6 +34,6 @@ public class PlanarRegionDataSetViewer extends Application
 
    public static void main(String[] args)
    {
-      launch(args);
+      ApplicationRunner.runApplication(PlanarRegionDataSetViewer::new);
    }
 }

@@ -25,6 +25,7 @@ public class ParameterTuner extends ParameterTuningApplication
 
    public static void main(String[] args)
    {
-      launch(args);
+      ParameterTuner parameterTuner = new ParameterTuner();
+      parameterTuner.start();
    }
 }

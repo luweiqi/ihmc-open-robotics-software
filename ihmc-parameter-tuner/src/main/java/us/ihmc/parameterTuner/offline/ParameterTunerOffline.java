@@ -13,6 +13,7 @@ public class ParameterTunerOffline extends ParameterTuningApplication
 
    public static void main(String[] args)
    {
-      launch(args);
+      ParameterTunerOffline parameterTunerOffline = new ParameterTunerOffline();
+      parameterTunerOffline.start();
    }
 }

@@ -1,7 +1,10 @@
 package us.ihmc.valkyrie.jfxvisualizer;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashSet;
+
 import javafx.animation.AnimationTimer;
-import javafx.application.Application;
 import javafx.scene.AmbientLight;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
@@ -14,19 +17,15 @@ import us.ihmc.graphicsDescription.instructions.Graphics3DPrimitiveInstruction;
 import us.ihmc.graphicsDescription.structure.Graphics3DNode;
 import us.ihmc.javaFXToolkit.node.JavaFXGraphics3DNode;
 import us.ihmc.javaFXToolkit.scenes.View3DFactory;
+import us.ihmc.javaFXToolkit.starter.ApplicationRunner;
 import us.ihmc.simulationConstructionSetTools.util.HumanoidFloatingRootJointRobot;
 import us.ihmc.simulationconstructionset.Joint;
 import us.ihmc.simulationconstructionset.Link;
 import us.ihmc.simulationconstructionset.OneDegreeOfFreedomJoint;
 import us.ihmc.simulationconstructionset.graphics.GraphicsRobot;
 import us.ihmc.valkyrie.ValkyrieRobotModel;
-import us.ihmc.valkyrie.configuration.ValkyrieRobotVersion;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashSet;
-
-public class ValkyrieJavaFxRobotVisualizer extends Application
+public class ValkyrieJavaFxRobotVisualizer
 {
    private static final boolean VISUALIZE_LINK_LOCATIONS = true;
    private static final boolean DO_ANIMATION = false;
@@ -35,8 +34,7 @@ public class ValkyrieJavaFxRobotVisualizer extends Application
    private JavaFXGraphics3DNode rootNode;
    private double t;
 
-   @Override
-   public void start(Stage primaryStage) throws Exception
+   public ValkyrieJavaFxRobotVisualizer(Stage primaryStage)
    {
       primaryStage.setTitle("SDF Viewer");
 
@@ -151,6 +149,6 @@ public class ValkyrieJavaFxRobotVisualizer extends Application
 
    public static void main(String[] args) throws IOException
    {
-      launch(args);
+      ApplicationRunner.runApplication(ValkyrieJavaFxRobotVisualizer::new);
    }
 }

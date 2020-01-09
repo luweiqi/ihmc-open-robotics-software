@@ -6,6 +6,7 @@ import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.MeshView;
 import javafx.scene.shape.Sphere;
 import javafx.stage.Stage;
+import us.ihmc.commons.lists.RecyclingArrayList;
 import us.ihmc.euclid.matrix.RotationMatrix;
 import us.ihmc.euclid.rotationConversion.RotationMatrixConversion;
 import us.ihmc.euclid.tuple3D.Point3D;
@@ -21,11 +22,10 @@ import us.ihmc.javaFXToolkit.scenes.View3DFactory;
 import us.ihmc.javaFXToolkit.shapes.JavaFXMeshBuilder;
 import us.ihmc.javaFXToolkit.shapes.JavaFXMultiColorMeshBuilder;
 import us.ihmc.javaFXToolkit.shapes.TextureColorPalette1D;
+import us.ihmc.javaFXToolkit.starter.ApplicationRunner;
 import us.ihmc.robotEnvironmentAwareness.geometry.IntersectionPlaneBoxCalculator;
-import us.ihmc.commons.lists.RecyclingArrayList;
-import us.ihmc.commons.lists.SupplierBuilder;
 
-public class DecayWithNormalOcTreeVisualizer extends Application
+public class DecayWithNormalOcTreeVisualizer
 {
    public final NormalOcTree ocTree = new NormalOcTree(0.02);
    private static final boolean SHOW_FREE_CELLS = true;
@@ -34,7 +34,10 @@ public class DecayWithNormalOcTreeVisualizer extends Application
    private static final boolean SHOW_HIT_LOCATIONS = false;
    private final ScanCollection scanCollectionForViz = new ScanCollection();
 
-   public DecayWithNormalOcTreeVisualizer()
+   private final RecyclingArrayList<Point3D> plane = new RecyclingArrayList<>(0, Point3D.class);
+   private final IntersectionPlaneBoxCalculator intersectionPlaneBoxCalculator = new IntersectionPlaneBoxCalculator();
+
+   public DecayWithNormalOcTreeVisualizer(Stage primaryStage)
    {
       Point3D lidarPosition = new Point3D(0.0, 0.0, 0.);
       PointCloud planePointCloud = createPlanePointCloud(0.0, 0.0, 1.0, 1.0, -0.250);
@@ -58,55 +61,7 @@ public class DecayWithNormalOcTreeVisualizer extends Application
       ocTree.updateNormals();
       ocTree.updateNormals();
       ocTree.updateNormals();
-   }
 
-   public PointCloud createPlanePointCloud(double pitch, double roll, double length, double width, double z)
-   {
-      PointCloud pointcloud = new PointCloud();
-
-      double resolution = 0.01;
-
-      for (double x = -0.5 * length; x < 0.5 * length; x += resolution)
-      {
-         for (double y = -0.5 * width; y < 0.5 * width; y += resolution)
-         {
-            Point3D point = new Point3D(x, y, 0.0);
-            RotationMatrix rotation = new RotationMatrix();
-            RotationMatrixConversion.convertYawPitchRollToMatrix(0.0, Math.toRadians(pitch), Math.toRadians(roll), rotation);
-            rotation.transform(point);
-            point.setZ(point.getZ() + z);
-
-            pointcloud.add(point);
-         }
-      }
-      return pointcloud;
-   }
-
-   public PointCloud createBowlPointCloud(double radius, Point3D center)
-   {
-      PointCloud pointcloud = new PointCloud();
-
-      double res = 0.025;
-      for (double yaw = 0.0; yaw < 2.0 * Math.PI; yaw += res)
-      {
-         for (double pitch = 0.0; pitch < 0.5 * Math.PI; pitch += res)
-         {
-            double x = Math.cos(pitch) * Math.cos(yaw) * radius + center.getX();
-            double y = Math.cos(pitch) * Math.sin(yaw) * radius + center.getY();
-            double z = -Math.sin(pitch) * radius + center.getZ();
-            pointcloud.add(x, y, z);
-         }
-      }
-
-      return pointcloud;
-   }
-
-   private final RecyclingArrayList<Point3D> plane = new RecyclingArrayList<>(0, Point3D.class);
-   private final IntersectionPlaneBoxCalculator intersectionPlaneBoxCalculator = new IntersectionPlaneBoxCalculator();
-
-   @Override
-   public void start(Stage primaryStage) throws Exception
-   {
       primaryStage.setTitle("OcTree Visualizer");
 
       View3DFactory view3dFactory = new View3DFactory(600, 400);
@@ -217,6 +172,47 @@ public class DecayWithNormalOcTreeVisualizer extends Application
       primaryStage.show();
    }
 
+   public PointCloud createPlanePointCloud(double pitch, double roll, double length, double width, double z)
+   {
+      PointCloud pointcloud = new PointCloud();
+
+      double resolution = 0.01;
+
+      for (double x = -0.5 * length; x < 0.5 * length; x += resolution)
+      {
+         for (double y = -0.5 * width; y < 0.5 * width; y += resolution)
+         {
+            Point3D point = new Point3D(x, y, 0.0);
+            RotationMatrix rotation = new RotationMatrix();
+            RotationMatrixConversion.convertYawPitchRollToMatrix(0.0, Math.toRadians(pitch), Math.toRadians(roll), rotation);
+            rotation.transform(point);
+            point.setZ(point.getZ() + z);
+
+            pointcloud.add(point);
+         }
+      }
+      return pointcloud;
+   }
+
+   public PointCloud createBowlPointCloud(double radius, Point3D center)
+   {
+      PointCloud pointcloud = new PointCloud();
+
+      double res = 0.025;
+      for (double yaw = 0.0; yaw < 2.0 * Math.PI; yaw += res)
+      {
+         for (double pitch = 0.0; pitch < 0.5 * Math.PI; pitch += res)
+         {
+            double x = Math.cos(pitch) * Math.cos(yaw) * radius + center.getX();
+            double y = Math.cos(pitch) * Math.sin(yaw) * radius + center.getY();
+            double z = -Math.sin(pitch) * radius + center.getZ();
+            pointcloud.add(x, y, z);
+         }
+      }
+
+      return pointcloud;
+   }
+
    private static final Color DEFAULT_COLOR = Color.DARKCYAN;
 
    public Color getNormalBasedColor(Vector3D normal, boolean isNormalSet)
@@ -236,6 +232,6 @@ public class DecayWithNormalOcTreeVisualizer extends Application
 
    public static void main(String[] args)
    {
-      Application.launch(args);
+      ApplicationRunner.runApplication(DecayWithNormalOcTreeVisualizer::new);
    }
 }

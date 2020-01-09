@@ -9,18 +9,18 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import controller_msgs.msg.dds.StereoVisionPointCloudMessage;
-import javafx.application.Application;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import us.ihmc.communication.IHMCROS2Publisher;
 import us.ihmc.communication.ROS2Tools;
+import us.ihmc.javaFXToolkit.starter.ApplicationRunner;
 import us.ihmc.pubsub.DomainFactory.PubSubImplementation;
 import us.ihmc.robotEnvironmentAwareness.tools.ExecutorServiceTools;
 import us.ihmc.robotEnvironmentAwareness.tools.ExecutorServiceTools.ExceptionHandling;
 import us.ihmc.robotEnvironmentAwareness.ui.io.StereoVisionPointCloudDataExporter;
 import us.ihmc.ros2.Ros2Node;
 
-public class SimulatedStereoVisionPointCloudPublisher extends Application
+public class SimulatedStereoVisionPointCloudPublisher
 {
    private static long DEFAULT_PUBLISHING_PERIOD_MS = 500;
 
@@ -37,8 +37,7 @@ public class SimulatedStereoVisionPointCloudPublisher extends Application
 
    private ScheduledExecutorService executorService = ExecutorServiceTools.newScheduledThreadPool(1, getClass(), ExceptionHandling.CATCH_AND_REPORT);
 
-   @Override
-   public void start(Stage primaryStage) throws Exception
+   public SimulatedStereoVisionPointCloudPublisher(Stage primaryStage)
    {
       System.out.println(this.getClass().getSimpleName());
 
@@ -135,7 +134,7 @@ public class SimulatedStereoVisionPointCloudPublisher extends Application
 
    public static void main(String[] args)
    {
-      launch();
+      ApplicationRunner.runApplication(SimulatedStereoVisionPointCloudPublisher::new);
    }
 
    private static long extractTimestamp(String fileName)

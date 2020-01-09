@@ -2,21 +2,18 @@ package us.ihmc.robotEnvironmentAwareness;
 
 import java.util.Map;
 
-import javafx.application.Application;
+import com.sun.javafx.application.ParametersImpl;
+
+import javafx.application.Application.Parameters;
 import javafx.stage.Stage;
+import us.ihmc.javaFXToolkit.starter.ApplicationRunner;
 import us.ihmc.log.LogTools;
 import us.ihmc.robotEnvironmentAwareness.ui.LIDARBasedEnvironmentAwarenessUI;
 
-public class RemoteLidarBasedREAUILauncher extends Application
+public class RemoteLidarBasedREAUILauncher
 {
-   public RemoteLidarBasedREAUILauncher()
+   public RemoteLidarBasedREAUILauncher(Stage primaryStage, Parameters parameters)
    {
-   }
-
-   @Override
-   public void start(Stage primaryStage) throws Exception
-   {
-      Parameters parameters = getParameters();
       Map<String, String> namedParameters = parameters.getNamed();
       String host = namedParameters.getOrDefault("host", "localhost");
       LogTools.info("Creating REA UI with the module address: " + host);
@@ -24,13 +21,20 @@ public class RemoteLidarBasedREAUILauncher extends Application
       if (!parameters.getRaw().isEmpty())
          LogTools.info("Received the program arguments: " + parameters.getRaw());
 
-      LIDARBasedEnvironmentAwarenessUI remoteUI = LIDARBasedEnvironmentAwarenessUI.creatRemoteUI(primaryStage, host);
-      remoteUI.show();
+      try
+      {
+         LIDARBasedEnvironmentAwarenessUI remoteUI = LIDARBasedEnvironmentAwarenessUI.createRemoteUI(primaryStage, host);
+         remoteUI.show();
+      }
+      catch (Exception e)
+      {
+         throw new RuntimeException(e);
+      }
    }
 
    public static void main(String[] args)
    {
       LogTools.info("To change the address of the module, enter its IP address as a program argument. For instance: " + "--host=127.0.0.1");
-      launch(args);
+      ApplicationRunner.runApplication(primaryStage -> new RemoteLidarBasedREAUILauncher(primaryStage, new ParametersImpl(args)));
    }
 }

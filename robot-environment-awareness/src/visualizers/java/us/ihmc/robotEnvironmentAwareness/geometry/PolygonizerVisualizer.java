@@ -4,16 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.PriorityQueue;
-import java.util.Random;
-import java.util.Set;
 import java.util.function.Supplier;
 
 import org.apache.commons.lang3.tuple.Pair;
@@ -22,16 +14,9 @@ import com.vividsolutions.jts.triangulate.quadedge.QuadEdge;
 import com.vividsolutions.jts.triangulate.quadedge.QuadEdgeTriangle;
 import com.vividsolutions.jts.triangulate.quadedge.Vertex;
 
-import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.Observable;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.*;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.scene.Group;
@@ -63,18 +48,15 @@ import us.ihmc.javaFXToolkit.scenes.View3DFactory;
 import us.ihmc.javaFXToolkit.shapes.JavaFXMeshBuilder;
 import us.ihmc.javaFXToolkit.shapes.JavaFXMultiColorMeshBuilder;
 import us.ihmc.javaFXToolkit.shapes.TextureColorAdaptivePalette;
+import us.ihmc.javaFXToolkit.starter.ApplicationRunner;
 import us.ihmc.robotEnvironmentAwareness.geometry.SimpleConcaveHullFactory.ConcaveHullFactoryResult;
 import us.ihmc.robotEnvironmentAwareness.geometry.SimpleConcaveHullFactory.ConcaveHullVariables;
-import us.ihmc.robotEnvironmentAwareness.planarRegion.IntersectionEstimationParameters;
-import us.ihmc.robotEnvironmentAwareness.planarRegion.PlanarRegionIntersectionCalculator;
-import us.ihmc.robotEnvironmentAwareness.planarRegion.PlanarRegionSegmentationRawData;
-import us.ihmc.robotEnvironmentAwareness.planarRegion.PolygonizerParameters;
-import us.ihmc.robotEnvironmentAwareness.planarRegion.PolygonizerTools;
+import us.ihmc.robotEnvironmentAwareness.planarRegion.*;
 import us.ihmc.robotEnvironmentAwareness.ui.graphicsBuilders.OcTreeMeshBuilder;
 import us.ihmc.robotEnvironmentAwareness.ui.io.PlanarRegionSegmentationRawDataImporter;
 import us.ihmc.robotics.linearAlgebra.PrincipalComponentAnalysis3D;
 
-public class PolygonizerVisualizer extends Application
+public class PolygonizerVisualizer
 {
    private static final boolean VISUALIZE_POINT_CLOUD = true;
    private static final boolean VISUALIZE_DELAUNAY_TRIANGULATION = true;
@@ -105,17 +87,13 @@ public class PolygonizerVisualizer extends Application
    private final BooleanProperty showIntersections = new SimpleBooleanProperty(this, "showIntersections", true);
    private final BooleanProperty showConstraintEdges = new SimpleBooleanProperty(this, "showConstraintEdges", false);
 
-   public PolygonizerVisualizer() throws IOException
+   public PolygonizerVisualizer(Stage primaryStage)
    {
       parameters.setEdgeLengthThreshold(0.05);
       //      parameters.setAllowSplittingConcaveHull(false);
       //      parameters.setRemoveAllTrianglesWithTwoBorderEdges(false);
       //      parameters.setMaxNumberOfIterations(0);
-   }
 
-   @Override
-   public void start(Stage primaryStage) throws Exception
-   {
       primaryStage.setTitle(getClass().getSimpleName());
 
       PlanarRegionSegmentationRawDataImporter dataImporter;
@@ -125,7 +103,14 @@ public class PolygonizerVisualizer extends Application
          dataImporter = PlanarRegionSegmentationRawDataImporter.createImporterWithFileChooser(primaryStage);
       if (dataImporter == null)
          Platform.exit();
-      dataImporter.loadPlanarRegionSegmentationData();
+      try
+      {
+         dataImporter.loadPlanarRegionSegmentationData();
+      }
+      catch (IOException e)
+      {
+         throw new RuntimeException(e);
+      }
       List<PlanarRegionSegmentationRawData> regionsRawData = dataImporter.getPlanarRegionSegmentationRawData();
       regionsRawData.forEach(rawData -> idToRawData.put(rawData.getRegionId(), rawData));
 
@@ -556,6 +541,6 @@ public class PolygonizerVisualizer extends Application
 
    public static void main(String[] args)
    {
-      Application.launch();
+      ApplicationRunner.runApplication(PolygonizerVisualizer::new);
    }
 }

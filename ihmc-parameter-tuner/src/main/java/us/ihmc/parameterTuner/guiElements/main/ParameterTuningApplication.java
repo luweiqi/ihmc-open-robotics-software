@@ -1,9 +1,11 @@
 package us.ihmc.parameterTuner.guiElements.main;
 
+import java.io.IOException;
 import java.util.List;
 
+import com.sun.javafx.application.PlatformImpl;
+
 import javafx.animation.AnimationTimer;
-import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
@@ -13,13 +15,28 @@ import us.ihmc.parameterTuner.JavaFXExceptionTools;
 import us.ihmc.parameterTuner.guiElements.GuiParameter;
 import us.ihmc.parameterTuner.guiElements.GuiRegistry;
 
-public abstract class ParameterTuningApplication extends Application
+public abstract class ParameterTuningApplication
 {
    private static final String FXML_FILE = "/gui.fxml";
 
-   @Override
-   public void start(Stage primaryStage) throws Exception
+   public void start()
    {
+      PlatformImpl.startup(() ->
+      {
+         try
+         {
+            startInternal();
+         }
+         catch (IOException e)
+         {
+            throw new RuntimeException(e);
+         }
+      });
+   }
+
+   private void startInternal() throws IOException
+   {
+      Stage primaryStage = new Stage();
       primaryStage.getIcons().add(new Image(ParameterTuningApplication.class.getResourceAsStream("/icon.png")));
 
       ParameterGuiInterface guiInterface = createInputManager();
@@ -66,7 +83,8 @@ public abstract class ParameterTuningApplication extends Application
       };
 
       animationTimer.start();
-      primaryStage.setOnCloseRequest(event -> {
+      primaryStage.setOnCloseRequest(event ->
+      {
          animationTimer.stop();
          guiInterface.shutdown();
          controller.close();

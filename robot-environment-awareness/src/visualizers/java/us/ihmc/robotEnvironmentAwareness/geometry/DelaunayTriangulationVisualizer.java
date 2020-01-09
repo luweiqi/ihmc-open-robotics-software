@@ -1,14 +1,11 @@
 package us.ihmc.robotEnvironmentAwareness.geometry;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-
-import us.ihmc.euclid.tuple2D.Point2D;
-import us.ihmc.euclid.tuple3D.Point3D;
-import us.ihmc.euclid.tuple4D.Quaternion;
 
 import com.vividsolutions.jts.geom.MultiPoint;
 import com.vividsolutions.jts.triangulate.ConformingDelaunayTriangulationBuilder;
@@ -16,7 +13,6 @@ import com.vividsolutions.jts.triangulate.quadedge.QuadEdge;
 import com.vividsolutions.jts.triangulate.quadedge.QuadEdgeSubdivision;
 import com.vividsolutions.jts.triangulate.quadedge.QuadEdgeTriangle;
 
-import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
@@ -29,30 +25,40 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.MeshView;
 import javafx.stage.Stage;
+import us.ihmc.euclid.tuple2D.Point2D;
+import us.ihmc.euclid.tuple3D.Point3D;
+import us.ihmc.euclid.tuple4D.Quaternion;
 import us.ihmc.javaFXToolkit.scenes.View3DFactory;
 import us.ihmc.javaFXToolkit.shapes.JavaFXMultiColorMeshBuilder;
 import us.ihmc.javaFXToolkit.shapes.TextureColorAdaptivePalette;
+import us.ihmc.javaFXToolkit.starter.ApplicationRunner;
 import us.ihmc.robotEnvironmentAwareness.planarRegion.PlanarRegionSegmentationRawData;
 import us.ihmc.robotEnvironmentAwareness.planarRegion.PolygonizerTools;
 import us.ihmc.robotEnvironmentAwareness.ui.graphicsBuilders.OcTreeMeshBuilder;
 import us.ihmc.robotEnvironmentAwareness.ui.io.PlanarRegionSegmentationRawDataImporter;
 
-public class DelaunayTriangulationVisualizer extends Application
+public class DelaunayTriangulationVisualizer
 {
    private static final boolean VISUALIZE_EDGES = false;
    private static final boolean VISUALIZE_PRIMARY_EDGES = true;
    private static final boolean VISUALIZE_ORDERED_BORDER_EDGES = true;
 
-   @Override
-   public void start(Stage primaryStage) throws Exception
+   public DelaunayTriangulationVisualizer(Stage primaryStage)
    {
       primaryStage.setTitle(getClass().getSimpleName());
 
-//    PlanarRegionSegmentationDataImporter dataImporter = new PlanarRegionSegmentationDataImporter(new File("../../Data/20161210_184102_PlanarRegionSegmentation_Sim_CB"));
+      //    PlanarRegionSegmentationDataImporter dataImporter = new PlanarRegionSegmentationDataImporter(new File("../../Data/20161210_184102_PlanarRegionSegmentation_Sim_CB"));
       PlanarRegionSegmentationRawDataImporter dataImporter = PlanarRegionSegmentationRawDataImporter.createImporterWithFileChooser(primaryStage);
       if (dataImporter == null)
          Platform.exit();
-      dataImporter.loadPlanarRegionSegmentationData();
+      try
+      {
+         dataImporter.loadPlanarRegionSegmentationData();
+      }
+      catch (IOException e)
+      {
+         throw new RuntimeException(e);
+      }
       List<PlanarRegionSegmentationRawData> regionsRawData = dataImporter.getPlanarRegionSegmentationRawData();
 
       View3DFactory view3dFactory = new View3DFactory(600, 400);
@@ -105,7 +111,8 @@ public class DelaunayTriangulationVisualizer extends Application
          }
       });
 
-      primaryStage.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
+      primaryStage.addEventHandler(KeyEvent.KEY_PRESSED, event ->
+      {
          if (event.getCode() == KeyCode.F5)
             nodeToRegionId.keySet().stream().forEach(node -> node.setVisible(true));
       });
@@ -219,6 +226,6 @@ public class DelaunayTriangulationVisualizer extends Application
 
    public static void main(String[] args)
    {
-      launch(args);
+      ApplicationRunner.runApplication(DelaunayTriangulationVisualizer::new);
    }
 }

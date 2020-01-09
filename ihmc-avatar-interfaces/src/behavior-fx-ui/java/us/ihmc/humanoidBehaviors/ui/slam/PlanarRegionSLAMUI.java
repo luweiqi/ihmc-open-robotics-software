@@ -1,6 +1,7 @@
 package us.ihmc.humanoidBehaviors.ui.slam;
 
-import javafx.application.Application;
+import java.io.IOException;
+
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -9,19 +10,19 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import us.ihmc.communication.ROS2Tools;
-import us.ihmc.javafx.graphics.LabelGraphic;
 import us.ihmc.humanoidBehaviors.ui.tools.LocalParameterServer;
 import us.ihmc.javaFXToolkit.scenes.View3DFactory;
+import us.ihmc.javaFXToolkit.starter.ApplicationRunner;
+import us.ihmc.javafx.graphics.LabelGraphic;
 import us.ihmc.pubsub.DomainFactory.PubSubImplementation;
 import us.ihmc.ros2.Ros2Node;
 
-public class PlanarRegionSLAMUI extends Application
+public class PlanarRegionSLAMUI
 {
    @FXML
    private PlanarRegionSLAMUITabController planarRegionSLAMUITabController;
 
-   @Override
-   public void start(Stage primaryStage) throws Exception
+   public PlanarRegionSLAMUI(Stage primaryStage)
    {
       Ros2Node ros2Node = ROS2Tools.createRos2Node(PubSubImplementation.FAST_RTPS, "behavior_ui");
 
@@ -33,7 +34,15 @@ public class PlanarRegionSLAMUI extends Application
       loader.setController(this);
       loader.setLocation(getClass().getResource(getClass().getSimpleName() + ".fxml"));
 
-      BorderPane mainPane = loader.load();
+      BorderPane mainPane;
+      try
+      {
+         mainPane = loader.load();
+      }
+      catch (IOException e)
+      {
+         throw new RuntimeException(e);
+      }
 
       View3DFactory view3dFactory = View3DFactory.createSubscene();
       view3dFactory.addCameraController(0.05, 2000.0, true);
@@ -57,6 +66,6 @@ public class PlanarRegionSLAMUI extends Application
 
    public static void main(String[] args)
    {
-      launch(args);
+      ApplicationRunner.runApplication(PlanarRegionSLAMUI::new);
    }
 }

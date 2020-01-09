@@ -1,6 +1,9 @@
 package us.ihmc.valkyrie.joystick;
 
+import com.sun.javafx.application.ParametersImpl;
+
 import javafx.application.Application;
+import javafx.application.Application.Parameters;
 import javafx.application.Platform;
 import javafx.stage.Stage;
 import us.ihmc.avatar.drcRobot.RobotTarget;
@@ -10,6 +13,7 @@ import us.ihmc.commonWalkingControlModules.configurations.SteppingParameters;
 import us.ihmc.commonWalkingControlModules.configurations.WalkingControllerParameters;
 import us.ihmc.communication.ROS2Tools;
 import us.ihmc.euclid.geometry.ConvexPolygon2D;
+import us.ihmc.javaFXToolkit.starter.ApplicationRunner;
 import us.ihmc.log.LogTools;
 import us.ihmc.pubsub.DomainFactory.PubSubImplementation;
 import us.ihmc.robotics.robotSide.SideDependentList;
@@ -17,16 +21,15 @@ import us.ihmc.ros2.Ros2Node;
 import us.ihmc.valkyrie.ValkyrieRobotModel;
 import us.ihmc.valkyrie.configuration.ValkyrieRobotVersion;
 
-public class ValkyrieJoystickBasedSteppingApplication extends Application
+public class ValkyrieJoystickBasedSteppingApplication
 {
    private JoystickBasedSteppingMainUI ui;
    private final Ros2Node ros2Node = ROS2Tools.createRos2Node(PubSubImplementation.FAST_RTPS, "ihmc_valkyrie_xbox_joystick_control");
 
-   @Override
-   public void start(Stage primaryStage) throws Exception
+   public ValkyrieJoystickBasedSteppingApplication(Stage primaryStage, Parameters parameters) throws Exception
    {
-      String robotTargetString = getParameters().getNamed().getOrDefault("robotTarget", "REAL_ROBOT");
-      String workingDirectory = getParameters().getNamed().get("workingDir");
+      String robotTargetString = parameters.getNamed().getOrDefault("robotTarget", "REAL_ROBOT");
+      String workingDirectory = parameters.getNamed().get("workingDir");
       RobotTarget robotTarget = RobotTarget.valueOf(robotTargetString);
       LogTools.info("-------------------------------------------------------------------");
       LogTools.info("  -------- Loading parameters for RobotTarget: " + robotTarget + "  -------");
@@ -61,13 +64,10 @@ public class ValkyrieJoystickBasedSteppingApplication extends Application
       ui.setActiveSecondaryControlOption(SecondaryControlOption.NONE);
    }
 
-   @Override
-   public void stop() throws Exception
+   public void stop()
    {
-      super.stop();
       ui.stop();
       ros2Node.destroy();
-
       Platform.exit();
    }
 
@@ -82,6 +82,22 @@ public class ValkyrieJoystickBasedSteppingApplication extends Application
     */
    public static void main(String[] args)
    {
-      launch(args);
+      ApplicationRunner.runApplication(new Application()
+      {
+         private ValkyrieJoystickBasedSteppingApplication app;
+
+         @Override
+         public void start(Stage primaryStage) throws Exception
+         {
+            app = new ValkyrieJoystickBasedSteppingApplication(primaryStage, new ParametersImpl(args));
+         }
+
+         @Override
+         public void stop() throws Exception
+         {
+            super.stop();
+            app.stop();
+         }
+      });
    }
 }

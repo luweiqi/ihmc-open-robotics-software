@@ -28,6 +28,7 @@ import us.ihmc.footstepPlanning.tools.PlannerTools;
 import us.ihmc.footstepPlanning.ui.FootstepPlannerUI;
 import us.ihmc.footstepPlanning.ui.components.FootstepPathCalculatorModule;
 import us.ihmc.javaFXToolkit.messager.SharedMemoryJavaFXMessager;
+import us.ihmc.javaFXToolkit.starter.ApplicationRunner;
 import us.ihmc.log.LogTools;
 import us.ihmc.messager.Messager;
 import us.ihmc.messager.SharedMemoryMessager;
@@ -35,7 +36,6 @@ import us.ihmc.pathPlanning.DataSet;
 import us.ihmc.pathPlanning.DataSetIOTools;
 import us.ihmc.pathPlanning.DataSetName;
 import us.ihmc.pathPlanning.PlannerInput;
-import us.ihmc.pathPlanning.visibilityGraphs.ui.ApplicationRunner;
 import us.ihmc.robotics.Assert;
 
 public abstract class FootstepPlannerDataSetTest

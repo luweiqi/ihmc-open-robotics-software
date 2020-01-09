@@ -1,12 +1,12 @@
 package us.ihmc.octoMap;
 
-import javafx.application.Application;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.MeshView;
 import javafx.scene.shape.Sphere;
 import javafx.stage.Stage;
 import us.ihmc.commons.Conversions;
+import us.ihmc.commons.lists.RecyclingArrayList;
 import us.ihmc.euclid.matrix.RotationMatrix;
 import us.ihmc.euclid.rotationConversion.RotationMatrixConversion;
 import us.ihmc.euclid.tuple3D.Point3D;
@@ -22,11 +22,10 @@ import us.ihmc.javaFXToolkit.scenes.View3DFactory;
 import us.ihmc.javaFXToolkit.shapes.JavaFXMeshBuilder;
 import us.ihmc.javaFXToolkit.shapes.JavaFXMultiColorMeshBuilder;
 import us.ihmc.javaFXToolkit.shapes.TextureColorPalette1D;
+import us.ihmc.javaFXToolkit.starter.ApplicationRunner;
 import us.ihmc.robotEnvironmentAwareness.geometry.IntersectionPlaneBoxCalculator;
-import us.ihmc.commons.lists.RecyclingArrayList;
-import us.ihmc.commons.lists.SupplierBuilder;
 
-public class NormalOcTreeVisualizer extends Application
+public class NormalOcTreeVisualizer
 {
    public final NormalOcTree ocTree = new NormalOcTree(0.025);
    private static final boolean SHOW_FREE_CELLS = false;
@@ -34,7 +33,10 @@ public class NormalOcTreeVisualizer extends Application
    private static final boolean SHOW_POINT_CLOUD = true;
    private static final boolean SHOW_HIT_LOCATIONS = true;
 
-   public NormalOcTreeVisualizer()
+   private final RecyclingArrayList<Point3D> plane = new RecyclingArrayList<>(0, Point3D.class);
+   private final IntersectionPlaneBoxCalculator intersectionPlaneBoxCalculator = new IntersectionPlaneBoxCalculator();
+
+   public NormalOcTreeVisualizer(Stage primaryStage)
    {
 
       Point3D lidarPosition = new Point3D(0.0, 0.0, 2.0);
@@ -54,77 +56,7 @@ public class NormalOcTreeVisualizer extends Application
       ocTree.update(new ScanCollection(pointcloud, lidarPosition));
       long endTime = System.nanoTime();
       System.out.println("Done computing normals: time it took = " + Conversions.nanosecondsToSeconds(endTime - startTime));
-   }
-   
-   PointCloud pointcloud = new PointCloud();
 
-   private void callInsertPointCloud()
-   {
-      Point3D origin = new Point3D(0.01, 0.01, 0.02);
-      Point3D pointOnSurface = new Point3D(4.01, 0.01, 0.01);
-
-      for (int i = 0; i < 100; i++)
-      {
-         for (int j = 0; j < 100; j++)
-         {
-            Point3D rotated = new Point3D(pointOnSurface);
-            RotationMatrix rotation = new RotationMatrix();
-            RotationMatrixConversion.convertYawPitchRollToMatrix(Math.toRadians(i * 0.5), Math.toRadians(j * 0.5), 0.0, rotation);
-            rotation.transform(rotated);
-            pointcloud.add(rotated);
-         }
-      }
-
-      ocTree.update(new ScanCollection(pointcloud, origin));
-   }
-
-   public void createPlane(Point3D lidarPosition, double pitch, double roll, double z)
-   {
-      pointcloud.clear();
-
-      double planeSize = 1.00;
-
-      for (double x = -0.5 * planeSize; x < 0.5 * planeSize; x += 0.7 * ocTree.getResolution())
-      {
-         for (double y = -0.5 * planeSize; y < 0.5 * planeSize; y += 0.7 * ocTree.getResolution())
-         {
-            Point3D point = new Point3D(x, y, 0.0);
-            RotationMatrix rotation = new RotationMatrix();
-            RotationMatrixConversion.convertYawPitchRollToMatrix(0.0, Math.toRadians(pitch), Math.toRadians(roll), rotation);
-            rotation.transform(point);
-            point.setZ(point.getZ() + z);
-
-            pointcloud.add(point);
-         }
-      }
-      ocTree.update(new ScanCollection(pointcloud, lidarPosition));
-   }
-
-   public void createBowl(double radius, Point3D center)
-   {
-      Point3D origin = new Point3D(0.0, 0.0, center.getZ() + 0.0);
-
-      double res = 0.05;
-      for (double yaw = 0.0; yaw < 2.0 * Math.PI; yaw += res)
-      {
-         for (double pitch = 0.0; pitch < 0.5 * Math.PI; pitch += res)
-         {
-            double x = Math.cos(pitch) * Math.cos(yaw) * radius + center.getX();
-            double y = Math.cos(pitch) * Math.sin(yaw) * radius + center.getY();
-            double z = - Math.sin(pitch) * radius + center.getZ();
-            pointcloud.add(x, y, z);
-         }
-      }
-
-      ocTree.update(new ScanCollection(pointcloud, origin));
-   }
-
-   private final RecyclingArrayList<Point3D> plane = new RecyclingArrayList<>(0, Point3D.class);
-   private final IntersectionPlaneBoxCalculator intersectionPlaneBoxCalculator = new IntersectionPlaneBoxCalculator();
-
-   @Override
-   public void start(Stage primaryStage) throws Exception
-   {
       primaryStage.setTitle("OcTree Visualizer");
 
       View3DFactory view3dFactory = new View3DFactory(600, 400);
@@ -234,6 +166,69 @@ public class NormalOcTreeVisualizer extends Application
       primaryStage.setScene(view3dFactory.getScene());
       primaryStage.show();
    }
+   
+   PointCloud pointcloud = new PointCloud();
+
+   private void callInsertPointCloud()
+   {
+      Point3D origin = new Point3D(0.01, 0.01, 0.02);
+      Point3D pointOnSurface = new Point3D(4.01, 0.01, 0.01);
+
+      for (int i = 0; i < 100; i++)
+      {
+         for (int j = 0; j < 100; j++)
+         {
+            Point3D rotated = new Point3D(pointOnSurface);
+            RotationMatrix rotation = new RotationMatrix();
+            RotationMatrixConversion.convertYawPitchRollToMatrix(Math.toRadians(i * 0.5), Math.toRadians(j * 0.5), 0.0, rotation);
+            rotation.transform(rotated);
+            pointcloud.add(rotated);
+         }
+      }
+
+      ocTree.update(new ScanCollection(pointcloud, origin));
+   }
+
+   public void createPlane(Point3D lidarPosition, double pitch, double roll, double z)
+   {
+      pointcloud.clear();
+
+      double planeSize = 1.00;
+
+      for (double x = -0.5 * planeSize; x < 0.5 * planeSize; x += 0.7 * ocTree.getResolution())
+      {
+         for (double y = -0.5 * planeSize; y < 0.5 * planeSize; y += 0.7 * ocTree.getResolution())
+         {
+            Point3D point = new Point3D(x, y, 0.0);
+            RotationMatrix rotation = new RotationMatrix();
+            RotationMatrixConversion.convertYawPitchRollToMatrix(0.0, Math.toRadians(pitch), Math.toRadians(roll), rotation);
+            rotation.transform(point);
+            point.setZ(point.getZ() + z);
+
+            pointcloud.add(point);
+         }
+      }
+      ocTree.update(new ScanCollection(pointcloud, lidarPosition));
+   }
+
+   public void createBowl(double radius, Point3D center)
+   {
+      Point3D origin = new Point3D(0.0, 0.0, center.getZ() + 0.0);
+
+      double res = 0.05;
+      for (double yaw = 0.0; yaw < 2.0 * Math.PI; yaw += res)
+      {
+         for (double pitch = 0.0; pitch < 0.5 * Math.PI; pitch += res)
+         {
+            double x = Math.cos(pitch) * Math.cos(yaw) * radius + center.getX();
+            double y = Math.cos(pitch) * Math.sin(yaw) * radius + center.getY();
+            double z = - Math.sin(pitch) * radius + center.getZ();
+            pointcloud.add(x, y, z);
+         }
+      }
+
+      ocTree.update(new ScanCollection(pointcloud, origin));
+   }
 
    private static final Color DEFAULT_COLOR = Color.DARKCYAN;
 
@@ -254,9 +249,6 @@ public class NormalOcTreeVisualizer extends Application
 
    public static void main(String[] args)
    {
-
-      //      new OcTreeVisualizer();
-
-      Application.launch(args);
+      ApplicationRunner.runApplication(NormalOcTreeVisualizer::new);
    }
 }

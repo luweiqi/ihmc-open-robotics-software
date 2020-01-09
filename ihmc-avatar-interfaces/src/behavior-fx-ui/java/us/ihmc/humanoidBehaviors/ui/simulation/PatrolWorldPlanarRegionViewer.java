@@ -1,15 +1,14 @@
 package us.ihmc.humanoidBehaviors.ui.simulation;
 
-import javafx.application.Application;
 import javafx.stage.Stage;
+import us.ihmc.javaFXToolkit.scenes.View3DFactory;
+import us.ihmc.javaFXToolkit.starter.ApplicationRunner;
 import us.ihmc.pathPlanning.PlannerTestEnvironments;
 import us.ihmc.pathPlanning.visibilityGraphs.ui.graphics.PlanarRegionsGraphic;
-import us.ihmc.javaFXToolkit.scenes.View3DFactory;
 
-public class PatrolWorldPlanarRegionViewer extends Application
+public class PatrolWorldPlanarRegionViewer
 {
-   @Override
-   public void start(Stage primaryStage) throws Exception
+   public PatrolWorldPlanarRegionViewer(Stage primaryStage)
    {
       View3DFactory view3dFactory = new View3DFactory(1200, 800);
       view3dFactory.addCameraController(0.05, 2000.0,true);
@@ -31,6 +30,6 @@ public class PatrolWorldPlanarRegionViewer extends Application
 
    public static void main(String[] args)
    {
-      launch(args);
+      ApplicationRunner.runApplication(PatrolWorldPlanarRegionViewer::new);
    }
 }

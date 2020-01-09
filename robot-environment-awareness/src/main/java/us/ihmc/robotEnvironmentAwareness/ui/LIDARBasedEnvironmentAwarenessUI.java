@@ -179,7 +179,7 @@ public class LIDARBasedEnvironmentAwarenessUI
       dataExporterAnchorPaneController.bindControls();
    }
 
-   public void show() throws IOException
+   public void show()
    {
       refreshModuleState();
       primaryStage.show();
@@ -202,7 +202,7 @@ public class LIDARBasedEnvironmentAwarenessUI
       }
    }
 
-   public static LIDARBasedEnvironmentAwarenessUI creatIntraprocessUI(Stage primaryStage) throws Exception
+   public static LIDARBasedEnvironmentAwarenessUI createIntraprocessUI(Stage primaryStage) throws Exception
    {
       Messager moduleMessager = KryoMessager.createIntraprocess(REAModuleAPI.API, NetworkPorts.REA_MODULE_UI_PORT,
                                                                 REACommunicationProperties.getPrivateNetClassList());
@@ -210,7 +210,7 @@ public class LIDARBasedEnvironmentAwarenessUI
       return new LIDARBasedEnvironmentAwarenessUI(uiMessager, primaryStage);
    }
 
-   public static LIDARBasedEnvironmentAwarenessUI creatRemoteUI(Stage primaryStage, String host) throws Exception
+   public static LIDARBasedEnvironmentAwarenessUI createRemoteUI(Stage primaryStage, String host) throws Exception
    {
       Messager moduleMessager = KryoMessager.createTCPClient(REAModuleAPI.API, host, NetworkPorts.REA_MODULE_UI_PORT,
                                                              REACommunicationProperties.getPrivateNetClassList());

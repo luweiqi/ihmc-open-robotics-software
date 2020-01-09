@@ -9,6 +9,7 @@ import us.ihmc.commons.thread.ThreadTools;
 import us.ihmc.euclid.tuple3D.Point3D;
 import us.ihmc.javaFXToolkit.messager.JavaFXMessager;
 import us.ihmc.javaFXToolkit.messager.SharedMemoryJavaFXMessager;
+import us.ihmc.javaFXToolkit.starter.ApplicationRunner;
 import us.ihmc.log.LogTools;
 import us.ihmc.pathPlanning.visibilityGraphs.dataStructure.VisibilityMapSolution;
 import us.ihmc.pathPlanning.visibilityGraphs.dataStructure.VisibilityMapWithNavigableRegion;
@@ -16,7 +17,7 @@ import us.ihmc.pathPlanning.visibilityGraphs.ui.messager.UIVisibilityGraphsTopic
 import us.ihmc.pathPlanning.visibilityGraphs.visualizer.VisibilityGraphsTestVisualizer;
 import us.ihmc.robotics.geometry.PlanarRegionsList;
 
-public class VisibilityGraphsTestVisualizerApplication extends Application
+public class VisibilityGraphsTestVisualizerApplication
 {
    // Default UI parameters which should be changeable on the fly
    private static final boolean showBodyPath = true;
@@ -35,7 +36,6 @@ public class VisibilityGraphsTestVisualizerApplication extends Application
    {
    }
 
-   @Override
    public void start(Stage primaryStage) throws Exception
    {
       messager = new SharedMemoryJavaFXMessager(UIVisibilityGraphsTopics.API);
@@ -59,7 +59,6 @@ public class VisibilityGraphsTestVisualizerApplication extends Application
       messager.submitMessage(UIVisibilityGraphsTopics.ShowInterRegionVisibilityMap, showRegionInterConnections);
    }
 
-   @Override
    public void stop() throws Exception
    {
       ui.stop();
@@ -77,8 +76,20 @@ public class VisibilityGraphsTestVisualizerApplication extends Application
 
    public void startOnAThread()
    {
-      Thread thread = new Thread(() -> launch());
-      thread.start();
+      ApplicationRunner.runApplication(new Application()
+      {
+         @Override
+         public void start(Stage primaryStage) throws Exception
+         {
+            VisibilityGraphsTestVisualizerApplication.this.start(primaryStage);
+         }
+
+         @Override
+         public void stop() throws Exception
+         {
+            VisibilityGraphsTestVisualizerApplication.this.stop();
+         }
+      });
 
       LogTools.info("Waiting for UI to be constructed.");
       while (!uiHasBeenConstructed.get())

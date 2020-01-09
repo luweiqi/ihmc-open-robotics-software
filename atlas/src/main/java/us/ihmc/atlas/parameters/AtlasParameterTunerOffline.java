@@ -22,6 +22,7 @@ public class AtlasParameterTunerOffline extends ParameterTuningApplication
 
    public static void main(String[] args)
    {
-      launch(args);
+      AtlasParameterTunerOffline atlasParameterTunerOffline = new AtlasParameterTunerOffline();
+      atlasParameterTunerOffline.start();
    }
 }

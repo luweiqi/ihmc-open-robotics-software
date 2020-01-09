@@ -15,6 +15,7 @@ import us.ihmc.footstepPlanning.communication.FootstepPlannerMessagerAPI;
 import us.ihmc.footstepPlanning.ui.FootstepPlannerUI;
 import us.ihmc.footstepPlanning.ui.RemoteUIMessageConverter;
 import us.ihmc.javaFXToolkit.messager.SharedMemoryJavaFXMessager;
+import us.ihmc.javaFXToolkit.starter.ApplicationRunner;
 import us.ihmc.pubsub.DomainFactory;
 import us.ihmc.robotEnvironmentAwareness.communication.REACommunicationProperties;
 import us.ihmc.ros2.RealtimeRos2Node;
@@ -24,7 +25,7 @@ import us.ihmc.ros2.RealtimeRos2Node;
  * toolbox. It allows users to view the resulting plans calculated by the toolbox. It also allows
  * the user to tune the planner parameters, and request a new plan from the planning toolboxs.
  */
-public class AtlasRemoteFootstepPlannerUI extends Application
+public class AtlasRemoteFootstepPlannerUI
 {
    private static final boolean launchPlannerToolbox = true;
 
@@ -35,8 +36,7 @@ public class AtlasRemoteFootstepPlannerUI extends Application
 
    private FootstepPlanningToolboxModule planningModule;
 
-   @Override
-   public void start(Stage primaryStage) throws Exception
+   public AtlasRemoteFootstepPlannerUI(Stage primaryStage) throws Exception
    {
       DRCRobotModel drcRobotModel = new AtlasRobotModel(AtlasRobotVersion.ATLAS_UNPLUGGED_V5_NO_HANDS, RobotTarget.REAL_ROBOT, false);
       DRCRobotModel previewModel = new AtlasRobotModel(AtlasRobotVersion.ATLAS_UNPLUGGED_V5_NO_HANDS, RobotTarget.REAL_ROBOT, false);
@@ -63,11 +63,8 @@ public class AtlasRemoteFootstepPlannerUI extends Application
       }
    }
 
-   @Override
    public void stop() throws Exception
    {
-      super.stop();
-
       messager.closeMessager();
       messageConverter.destroy();
       ui.stop();
@@ -82,6 +79,22 @@ public class AtlasRemoteFootstepPlannerUI extends Application
 
    public static void main(String[] args)
    {
-      launch(args);
+      ApplicationRunner.runApplication(new Application()
+      {
+         private AtlasRemoteFootstepPlannerUI app;
+
+         @Override
+         public void start(Stage primaryStage) throws Exception
+         {
+            app = new AtlasRemoteFootstepPlannerUI(primaryStage);
+         }
+
+         @Override
+         public void stop() throws Exception
+         {
+            super.stop();
+            app.stop();
+         }
+      });
    }
 }

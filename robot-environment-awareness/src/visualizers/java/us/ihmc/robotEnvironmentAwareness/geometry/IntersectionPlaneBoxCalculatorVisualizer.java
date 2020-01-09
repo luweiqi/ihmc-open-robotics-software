@@ -2,20 +2,19 @@ package us.ihmc.robotEnvironmentAwareness.geometry;
 
 import java.util.List;
 
-import us.ihmc.euclid.tuple3D.Point3D;
-import us.ihmc.euclid.tuple3D.Vector3D;
-
-import javafx.application.Application;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Box;
 import javafx.scene.shape.MeshView;
 import javafx.stage.Stage;
+import us.ihmc.euclid.tuple3D.Point3D;
+import us.ihmc.euclid.tuple3D.Vector3D;
 import us.ihmc.javaFXToolkit.scenes.View3DFactory;
 import us.ihmc.javaFXToolkit.shapes.JavaFXMultiColorMeshBuilder;
 import us.ihmc.javaFXToolkit.shapes.TextureColorPalette1D;
+import us.ihmc.javaFXToolkit.starter.ApplicationRunner;
 
-public class IntersectionPlaneBoxCalculatorVisualizer extends Application
+public class IntersectionPlaneBoxCalculatorVisualizer
 {
    private final TextureColorPalette1D colorPalette = new TextureColorPalette1D();
    private final JavaFXMultiColorMeshBuilder colorMeshBuilder = new JavaFXMultiColorMeshBuilder(colorPalette);
@@ -23,7 +22,7 @@ public class IntersectionPlaneBoxCalculatorVisualizer extends Application
    private final Box box;
 //   private final Cylinder normalCylinder;
 
-   public IntersectionPlaneBoxCalculatorVisualizer()
+   public IntersectionPlaneBoxCalculatorVisualizer(Stage primaryStage)
    {
       double lx = 0.1;
       double ly = 0.1;
@@ -78,11 +77,7 @@ public class IntersectionPlaneBoxCalculatorVisualizer extends Application
          v3.cross(v0, v1);
          System.out.println(v3.dot(planeNormal) < 0.0);
       }
-   }
 
-   @Override
-   public void start(Stage primaryStage) throws Exception
-   {
       View3DFactory view3dFactory = new View3DFactory(800, 600);
       view3dFactory.addCameraController();
       view3dFactory.addWorldCoordinateSystem(0.3);
@@ -107,6 +102,6 @@ public class IntersectionPlaneBoxCalculatorVisualizer extends Application
 
    public static void main(String[] args)
    {
-      Application.launch(args);
+      ApplicationRunner.runApplication(IntersectionPlaneBoxCalculatorVisualizer::new);
    }
 }

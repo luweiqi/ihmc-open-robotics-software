@@ -1,5 +1,7 @@
 package us.ihmc.valkyrie.planner.ui;
 
+import java.util.concurrent.atomic.AtomicReference;
+
 import controller_msgs.msg.dds.*;
 import javafx.application.Application;
 import javafx.fxml.FXML;
@@ -35,8 +37,6 @@ import us.ihmc.valkyrie.ValkyrieStandPrepParameters;
 import us.ihmc.valkyrie.planner.ValkyrieAStarFootstepPlanner;
 import us.ihmc.valkyrie.planner.ValkyrieAStarFootstepPlanner.Status;
 import us.ihmc.valkyrieRosControl.ValkyrieRosControlController;
-
-import java.util.concurrent.atomic.AtomicReference;
 
 public class ValkyrieFootstepPlannerUI extends Application
 {
@@ -264,10 +264,5 @@ public class ValkyrieFootstepPlannerUI extends Application
       graphicsViewer.packWaypoints(requestPacket);
 
       planner.handleRequestPacket(requestPacket);
-   }
-
-   public static void main(String[] args)
-   {
-      launch(args);
    }
 }

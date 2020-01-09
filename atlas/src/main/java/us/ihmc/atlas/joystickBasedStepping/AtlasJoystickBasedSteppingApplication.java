@@ -1,7 +1,10 @@
 package us.ihmc.atlas.joystickBasedStepping;
 
+import com.sun.javafx.application.ParametersImpl;
+
 import controller_msgs.msg.dds.BDIBehaviorCommandPacket;
 import javafx.application.Application;
+import javafx.application.Application.Parameters;
 import javafx.application.Platform;
 import javafx.stage.Stage;
 import us.ihmc.atlas.AtlasRobotModel;
@@ -16,20 +19,20 @@ import us.ihmc.communication.IHMCROS2Publisher;
 import us.ihmc.communication.ROS2Tools;
 import us.ihmc.euclid.geometry.ConvexPolygon2D;
 import us.ihmc.humanoidRobotics.communication.packets.HumanoidMessageTools;
+import us.ihmc.javaFXToolkit.starter.ApplicationRunner;
 import us.ihmc.pubsub.DomainFactory.PubSubImplementation;
 import us.ihmc.robotics.robotSide.SideDependentList;
 import us.ihmc.ros2.Ros2Node;
 
-public class AtlasJoystickBasedSteppingApplication extends Application
+public class AtlasJoystickBasedSteppingApplication
 {
    private JoystickBasedSteppingMainUI ui;
    private final Ros2Node ros2Node = ROS2Tools.createRos2Node(PubSubImplementation.FAST_RTPS, "ihmc_atlas_xbox_joystick_control");
    private IHMCROS2Publisher<BDIBehaviorCommandPacket> bdiBehaviorcommandPublisher;
 
-   @Override
-   public void start(Stage primaryStage) throws Exception
+   public AtlasJoystickBasedSteppingApplication(Stage primaryStage, Parameters parameters) throws Exception
    {
-      String robotTargetString = getParameters().getNamed().getOrDefault("robotTarget", "REAL_ROBOT");
+      String robotTargetString = parameters.getNamed().getOrDefault("robotTarget", "REAL_ROBOT");
       RobotTarget robotTarget = RobotTarget.valueOf(robotTargetString);
       PrintTools.info("-------------------------------------------------------------------");
       PrintTools.info("  -------- Loading parameters for RobotTarget: " + robotTarget + "  -------");
@@ -57,10 +60,8 @@ public class AtlasJoystickBasedSteppingApplication extends Application
                                            new SideDependentList<>(footPolygon, footPolygon));
    }
 
-   @Override
    public void stop() throws Exception
    {
-      super.stop();
       ui.stop();
       ros2Node.destroy();
 
@@ -76,6 +77,22 @@ public class AtlasJoystickBasedSteppingApplication extends Application
     */
    public static void main(String[] args)
    {
-      launch(args);
+      ApplicationRunner.runApplication(new Application()
+      {
+         private AtlasJoystickBasedSteppingApplication app;
+
+         @Override
+         public void start(Stage primaryStage) throws Exception
+         {
+            app = new AtlasJoystickBasedSteppingApplication(primaryStage, new ParametersImpl(args));
+         }
+
+         @Override
+         public void stop() throws Exception
+         {
+            super.stop();
+            app.stop();
+         }
+      });
    }
 }

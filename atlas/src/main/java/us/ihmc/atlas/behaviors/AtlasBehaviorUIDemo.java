@@ -112,12 +112,11 @@ public class AtlasBehaviorUIDemo
       {
          new Thread(() -> {
             LogTools.info("Launching remote footstep planner UI");
-            AtlasRemoteFootstepPlannerUI atlasRemoteFootstepPlannerUI = new AtlasRemoteFootstepPlannerUI();
             Platform.runLater(() ->
             {
                try
                {
-                  atlasRemoteFootstepPlannerUI.start(new Stage());
+                  new AtlasRemoteFootstepPlannerUI(new Stage());
                }
                catch (Exception e)
                {
