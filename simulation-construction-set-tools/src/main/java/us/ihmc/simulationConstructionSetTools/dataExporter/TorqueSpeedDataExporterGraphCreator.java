@@ -42,14 +42,14 @@ public class TorqueSpeedDataExporterGraphCreator extends DataExporterGraphCreato
          String torqueLabel = torque.getVariableName() + " [Nm]";
          String speedLabel = speed.getVariableName() + " [rad/s]";
 
-         String torqueSpeedTitle = torque.getVariableName() + "_Vs_" + speed.getVariableName();
-         String torquePositionTitle = torque.getVariableName() + "_Vs_" + position.getVariableName();
+         String torqueSpeedTitle = speed.getVariableName() + "_Vs_" + torque.getVariableName();
+         String torquePositionTitle = position.getVariableName() + "_Vs_" + torque.getVariableName();
 
          createDataVsTimeGraph(directory, fileHeader, position, createJPG, createPDF, timeLabel, positionLabel, Color.black);
          createDataVsTimeGraph(directory, fileHeader, torque, createJPG, createPDF, timeLabel, torqueLabel, Color.black);
          createDataVsTimeGraph(directory, fileHeader, speed, createJPG, createPDF, timeLabel, speedLabel, Color.black);
-         createDataOneVsDataTwoGraph(directory, fileHeader, speed, torque, createJPG, createPDF, torqueSpeedTitle, speedLabel, torqueLabel, Color.black);
-         createDataOneVsDataTwoGraph(directory, fileHeader, position, torque, createJPG, createPDF, torquePositionTitle, positionLabel, torqueLabel, Color.black);
+         createDataOneVsDataTwoGraph(directory, fileHeader, torque, speed, createJPG, createPDF, torqueSpeedTitle, torqueLabel, speedLabel, Color.black);
+         createDataOneVsDataTwoGraph(directory, fileHeader, torque, position, createJPG, createPDF, torquePositionTitle, torqueLabel, positionLabel, Color.black);
       }
    }
 
