@@ -45,7 +45,7 @@ import us.ihmc.yoVariables.variable.YoFramePoint3D;
 public class ExternalWrenchEstimator implements RobotController
 {
    public static final double forceGraphicScale = 0.035;
-   private static final int maximumNumberOfContactPoints = 10;
+   public static final int maximumNumberOfContactPoints = 10;
    private static final double defaultEstimatorGain = 0.7;
 
    private final String name = getClass().getSimpleName();

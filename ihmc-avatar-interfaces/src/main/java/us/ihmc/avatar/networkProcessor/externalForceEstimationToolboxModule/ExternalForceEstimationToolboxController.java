@@ -31,6 +31,7 @@ import us.ihmc.robotics.contactable.ContactablePlaneBody;
 import us.ihmc.robotics.robotSide.RobotSide;
 import us.ihmc.yoVariables.registry.YoVariableRegistry;
 import us.ihmc.yoVariables.variable.YoBoolean;
+import us.ihmc.yoVariables.variable.YoDouble;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -42,6 +43,7 @@ import java.util.function.ToIntFunction;
 
 public class ExternalForceEstimationToolboxController extends ToolboxController
 {
+   private final double updateDT;
    private final HumanoidReferenceFrames referenceFrames;
 
    private final AtomicReference<RobotConfigurationData> robotConfigurationData = new AtomicReference<>();
@@ -67,6 +69,7 @@ public class ExternalForceEstimationToolboxController extends ToolboxController
    private final CommandInputManager commandInputManager;
    private ExternalWrenchEstimator externalWrenchEstimator;
    private final ExternalForceEstimationOutputStatus outputStatus = new ExternalForceEstimationOutputStatus();
+   private final EstimationData[] estimationData = new EstimationData[ExternalWrenchEstimator.maximumNumberOfContactPoints];
 
    public ExternalForceEstimationToolboxController(DRCRobotModel robotModel,
                                                    FullHumanoidRobotModel fullRobotModel,
@@ -78,6 +81,7 @@ public class ExternalForceEstimationToolboxController extends ToolboxController
    {
       super(statusOutputManager, parentRegistry);
 
+      this.updateDT = Conversions.millisecondsToSeconds(updateRateMillis);
       this.commandInputManager = commandInputManager;
       this.fullRobotModel = fullRobotModel;
       this.referenceFrames = new HumanoidReferenceFrames(fullRobotModel);
@@ -88,7 +92,6 @@ public class ExternalForceEstimationToolboxController extends ToolboxController
                           .subtreeIterable()
                           .forEach(rigidBody -> rigidBodyHashMap.put(rigidBody.hashCode(), rigidBody));
 
-      double updateDT = Conversions.millisecondsToSeconds(updateRateMillis);
       JointBasics[] joints = HighLevelHumanoidControllerToolbox.computeJointsToOptimizeFor(fullRobotModel);
       WholeBodyControlCoreToolbox controlCoreToolbox = new WholeBodyControlCoreToolbox(robotModel.getControllerDT(),
                                                                 9.81,
@@ -129,6 +132,11 @@ public class ExternalForceEstimationToolboxController extends ToolboxController
       for (int i = 0; i < oneDoFJoints.length; i++)
       {
          jointNameMap.put(oneDoFJoints[i].getName(), oneDoFJoints[i]);
+      }
+
+      for (int i = 0; i < ExternalWrenchEstimator.maximumNumberOfContactPoints; i++)
+      {
+         estimationData[i] = new EstimationData(i, externalWrenchEstimator.getEstimatedExternalWrenches()[i]);
       }
 
       jointNameToMatrixIndexFunction = jointName ->
@@ -223,6 +231,11 @@ public class ExternalForceEstimationToolboxController extends ToolboxController
 
       outputStatus.setSequenceId(outputStatus.getSequenceId() + 1);
 
+      for (int i = 0; i < estimationData.length; i++)
+      {
+         estimationData[i].update();
+      }
+
       statusOutputManager.reportStatusMessage(outputStatus);
    }
 
@@ -284,6 +297,42 @@ public class ExternalForceEstimationToolboxController extends ToolboxController
          int matrixIndex = jointNameToMatrixIndex.applyAsInt(jointName);
 
          controllerDesiredQdd.set(matrixIndex, 0, jointDesiredOutputList.get(i).getDesiredAcceleration());
+      }
+   }
+
+   private class EstimationData
+   {
+      private final YoFixedFrameSpatialVector estimatedWrench;
+      private final YoFixedFrameSpatialVector forceDerivative;
+      private final YoFixedFrameSpatialVector estimatedWrenchPrev;
+      private final YoDouble linearForceMagnitude;
+
+      boolean firstTick = true;
+
+      EstimationData(int index, YoFixedFrameSpatialVector estimatedWrench)
+      {
+         this.estimatedWrench = estimatedWrench;
+         this.forceDerivative = new YoFixedFrameSpatialVector("d_estimatedExternalWrench" + index, ReferenceFrame.getWorldFrame(), registry);
+         this.linearForceMagnitude = new YoDouble("magnitude_" + index, registry);
+         this.estimatedWrenchPrev = new YoFixedFrameSpatialVector("estimatedWrenchPrev" + index, ReferenceFrame.getWorldFrame(), registry);
+      }
+
+      void update()
+      {
+         this.linearForceMagnitude.set(estimatedWrench.getLinearPart().length());
+
+         if(firstTick)
+         {
+            firstTick = false;
+         }
+         else
+         {
+            forceDerivative.set(estimatedWrench);
+            forceDerivative.sub(estimatedWrenchPrev);
+            forceDerivative.scale(1 / updateDT);
+         }
+
+         estimatedWrenchPrev.set(estimatedWrench);
       }
    }
 }
